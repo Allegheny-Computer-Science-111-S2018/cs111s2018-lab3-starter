@@ -1,0 +1,38 @@
+# use the Python 3.5 language
+language: python
+python:
+  - "3.5"
+
+# cache to improve build speed
+cache:
+  directories:
+    - $HOME/.pip-cache/
+
+# install mdl for checking Markdown
+before_install:
+  - gem install mdl
+
+# command to install dependencies
+install:
+  - pip install --upgrade pip
+  - pip3 install --upgrade pip
+  - pip install -r requirements.txt --cache-dir $HOME/.pip-cache
+  - pip3 install flake8
+  - python3 -m nltk.downloader punkt
+
+# set GATORGRADER_HOME environment variable
+before_script:
+  - export GATORGRADER_HOME="/home/travis/build/gkapfham/gatorgrader"
+
+# perform testing:
+# --> run the internal test suite with pytest
+# --> perform linting with
+#     --> Python: flake8
+#         --> test suites
+#         --> main program
+#     --> Markdown: mdl
+script:
+  - pytest --cov-config pytest.cov --cov
+  - flake8 tests*
+  - flake8 gatorgrader*
+  - mdl README.md
